@@ -1,6 +1,10 @@
 FROM gradle:7.4-jdk11-alpine AS build
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
+
+# make gradlew executablez in the container
+RUN chmod +x ./gradlew
+
 RUN ./gradlew build --no-daemon
 
 # helpful link: https://forums.docker.com/t/solved-copy-files-into-a-tomcat-image/71728/4
