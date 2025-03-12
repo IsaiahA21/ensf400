@@ -25,7 +25,7 @@ jobs:
       - name: build the image
         run: |
           cd demo-master
-          docker build -t ensf_project:${{ github.ref_name }}_$(git rev-parse --short HEAD)
+          docker build -t ensf_project:${{ github.ref_name }}_$(git rev-parse --short HEAD) .
 
       - name: Run the docker image (this runs in the this weird env)
         run: docker run ensf_project:${{ github.ref_name }}_$(git rev-parse --short HEAD)
