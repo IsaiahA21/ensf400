@@ -14,11 +14,18 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
       - name: Extract commit SHA
         run: | 
           echo branch: ${{ github.ref_name }} 
           echo hash $(git rev-parse --short HEAD)
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: build the image
+        run: |
+          cd demo-master
+          docker build -t ensf_project:${{ github.ref_name }}_$(git rev-parse --short HEAD)
+
+      - name: Run the docker image (this runs in the this weird env)
+        run: docker run ensf_project:${{ github.ref_name }}_$(git rev-parse --short HEAD)
