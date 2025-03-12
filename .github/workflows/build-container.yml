@@ -20,5 +20,5 @@ jobs:
 
       - name: Extract commit SHA
         run: | 
-          echo branch: ${{ github.head_ref }} 
-          echo hash ${{ github.sha }}
+          echo branch: ${{ github.ref_name }} 
+          echo hash $(git rev-parse --short HEAD)
