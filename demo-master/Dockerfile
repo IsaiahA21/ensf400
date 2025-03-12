@@ -1,27 +1,16 @@
-# Use an official OpenJDK runtime as a parent image
-FROM openjdk:11-jdk-slim
+FROM gradle:7.4-jdk11-alpine AS build
+COPY --chown=gradle:gradle . /home/gradle/src
+WORKDIR /home/gradle/src
+RUN ./gradlew build --no-daemon
 
-#Set working directory
-WORKDIR /app
+FROM tomcat:9.0-jdk11-openjdk-slim
 
+# Remove the default Tomcat applications
+RUN rm -rf /usr/local/tomcat/webapps/*
 
-
-# Copy just the gradle wrapper files first for better layer caching
-COPY gradle gradle
-COPY gradlew gradlew
-COPY build.gradle build.gradle
-COPY gradle.properties gradle.properties
-
-# Make Gradle wrapper executable
-RUN chmod +x gradlew
-
-#Copy the current directory content into the container at /app
-COPY . .
-
-
-# Build the project
-RUN ./gradlew build
+# Copy the WAR file to Tomcat's webapps directory as ROOT.war
+COPY --from=build /home/gradle/src/build/libs/*.war /usr/local/tomcat/webapps/ROOT.war
 
 EXPOSE 8080
-# Run the application
-CMD ["./gradlew", "appRun"]
+
+CMD ["catalina.sh", "run"]
