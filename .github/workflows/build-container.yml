@@ -30,3 +30,8 @@ jobs:
       - name: Run a health check of the container just to verify it runs
         run: docker run -d ensf_project:${{ github.ref_name }}_$(git rev-parse --short HEAD)
 
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+         username: ${{ secrets.DOCKERHUB_USERNAME }}
+         password: ${{ secrets.DOCKERHUB_TOKEN }}
