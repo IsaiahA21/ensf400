@@ -3,6 +3,8 @@ COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
 RUN ./gradlew build --no-daemon
 
+# helpful link: https://forums.docker.com/t/solved-copy-files-into-a-tomcat-image/71728/4
+
 FROM tomcat:9.0-jdk11-openjdk-slim
 
 # Remove the default Tomcat applications
