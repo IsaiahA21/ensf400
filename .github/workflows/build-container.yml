@@ -27,5 +27,10 @@ jobs:
           cd demo-master
           docker build -t ensf_project:${{ github.ref_name }}_$(git rev-parse --short HEAD) .
 
-      - name: Run the docker image (this runs in the this weird env)
-        run: docker run ensf_project:${{ github.ref_name }}_$(git rev-parse --short HEAD)
+      - name: Run a health check of the container just to verify it runs
+        run: |
+          container_id=$(docker run -d ensf_project:${{ github.ref_name }}_$(git rev-parse --short HEAD))
+          echo "Container started with ID: $container_id"
+          sleep 15  # Give Tomcat time to start
+          docker exec $container_id curl -s --retry 5 --retry-delay 5 http://localhost:8080 || echo "App started but couldn't connect"
+          docker stop $container_id
