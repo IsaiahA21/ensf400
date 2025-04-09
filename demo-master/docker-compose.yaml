@@ -20,3 +20,10 @@ services:
       #accessible on port 8888 
       - "8888:8080"
     container_name: my-ensf-java-app
+
+  sonarqube:
+    image: sonarqube:community
+    ports:
+      - "9000:9000"
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
