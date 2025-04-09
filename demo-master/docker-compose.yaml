@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   jenkins:
-    build: .
+    image: jenkins/jenkins:lts
     privileged: true
     user: root
     ports:
@@ -12,3 +12,18 @@ services:
     volumes:
     - /workspaces/ensf400-lab9-jenkins/jenkins_home:/var/jenkins_home
     - /var/run/docker.sock:/var/run/docker.sock
+
+  webapp:
+    # build using the dockerfile
+    build: .
+    ports:
+      #accessible on port 8888 
+      - "8888:8080"
+    container_name: my-ensf-java-app
+
+  sonarqube:
+    image: sonarqube:community
+    ports:
+      - "9000:9000"
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true

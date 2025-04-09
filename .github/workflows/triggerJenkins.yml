@@ -1,0 +1,21 @@
+#resource: https://github.com/marketplace/actions/trigger-jenkins-job-and-return-result
+name: Trigger Jenkins Job on PR
+on:
+    push:
+        branches:
+            - '**'
+    pull_request:
+jobs:
+    Trigger-jenkins-job:
+        runs-on: ubuntu-latest
+        steps:
+            - name: single_Jenkins_Job
+              uses: mickeygoussetorg/trigger-jenkins-job@v1
+              with:
+                jenkins-server: "https://symmetrical-goldfish-6pvxrjxjw7wf74j-8080.app.github.dev/job"
+                jenkins-job: "Task One"
+                jenkins-username: ${{ secrets.JENKINS_USERNAME }}
+                jenkins-pat: ${{ secrets.JENKINS_PAT }}
+                poll-time: 10 # poll server every 10 seconds for job completion
+                timeout-value: 300 # timeout after 5 minutes
+                verbose: true # set to true to see more details in the logs 
