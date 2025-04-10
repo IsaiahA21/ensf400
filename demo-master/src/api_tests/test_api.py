@@ -1,6 +1,6 @@
 import requests
 
-SERVER = "localhost"
+SERVER = "symmetrical-goldfish-6pvxrjxjw7wf74j-8888.app.github.dev"
 URL = "http://%s:8080" % SERVER
 
 
