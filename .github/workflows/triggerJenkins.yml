@@ -1,21 +1,67 @@
-#resource: https://github.com/marketplace/actions/trigger-jenkins-job-and-return-result
+# use the GitHub CLI to interact with your Codespace programmatically, which might avoid the consent screen issue.
+
 name: Trigger Jenkins Job on PR
 on:
-    push:
-        branches:
-            - '**'
-    pull_request:
+  push:
+    branches:
+      - '**'
+  pull_request:
+
 jobs:
-    Trigger-jenkins-job:
-        runs-on: ubuntu-latest
-        steps:
-            - name: single_Jenkins_Job
-              uses: mickeygoussetorg/trigger-jenkins-job@v1
-              with:
-                jenkins-server: "https://symmetrical-goldfish-6pvxrjxjw7wf74j-8080.app.github.dev/job"
-                jenkins-job: "Task One"
-                jenkins-username: ${{ secrets.JENKINS_USERNAME }}
-                jenkins-pat: ${{ secrets.JENKINS_PAT }}
-                poll-time: 10 # poll server every 10 seconds for job completion
-                timeout-value: 300 # timeout after 5 minutes
-                verbose: true # set to true to see more details in the logs 
+  Trigger-jenkins-job:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      # Step 2: Install GitHub CLI
+      - name: Install GitHub CLI
+        run: |
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install gh
+      
+      # # Step 3: Authenticate GitHub CLI with the Personal Access Token (PAT)
+      # - name: Authenticate GitHub CLI
+      #   run: |
+      #       # Remove any existing GH_TOKEN from environment first
+      #       unset GH_TOKEN
+      #       # Then authenticate using the secret
+      #       echo "${{ secrets.GH_TOKEN }}" | gh auth login --with-token
+      #   env:
+      #     GH_TOKEN: ${{ secrets.JENKINS_PAT }}
+      
+      # # Step 4: Refresh Authentication with the new permissions
+      # - name: Refresh GitHub CLI Authentication
+      #   run: gh auth refresh -h github.com -s codespace
+
+      # # Step 4: List active Codespaces
+      # - name: List Codespaces
+      #   run: |
+      #     echo "Listing all active codespaces:"
+      #     gh codespace list
+      
+      # # Step 5: Connect to the Codespace and forward the Jenkins port
+      # - name: Connect to Codespace and access Jenkins
+      #   run: |
+      #     # Get the name of your active codespace (adjust the grep pattern as needed)
+      #     CODESPACE_NAME=$(gh codespace list | grep "symmetrical-goldfish" | awk '{print $1}')
+          
+      #     # Forward the Jenkins port (8080) to the local machine
+      #     gh codespace ports forward 8080:8080 -c "$CODESPACE_NAME"  &
+      #     sleep 5
+      #     curl http://localhost:8080/login # Check if Jenkins is accessible
+          
+      # # Step 6: Trigger Jenkins job
+      # - name: Trigger Jenkins Job
+      #   run: |
+      #     curl -X POST "http://localhost:8080/job/Take%20One/build" \
+      #     --user "${{ secrets.JENKINS_USERNAME }}:${{ secrets.JENKINS_PAT }}"
+
+      # Step 3B: Trigger Jenkins job using the Jenkins URL. This requires the Jenkins URL to be publicly accessible.
+      - name: Trigger Jenkins Job
+        run: |
+          curl -X POST "https://symmetrical-goldfish-6pvxrjxjw7wf74j-8080.app.github.dev/job/Take%20One/build" \
+          --user "${{ secrets.JENKINS_USERNAME }}:${{ secrets.JENKINS_PAT }}"
