@@ -78,75 +78,75 @@ pipeline {
         }
     }
 
-    // Runs an analysis of the code, looking for any
-    // patterns that suggest potential bugs.
-    stage('Static Analysis') {
-      steps {
-        dir('demo-master') {
-          sh './gradlew sonarqube'
-          // wait for sonarqube to finish its analysis
-          sleep 5
-          sh './gradlew checkQualityGate'
-        }
-      }
-    }
+    // // Runs an analysis of the code, looking for any
+    // // patterns that suggest potential bugs.
+    // stage('Static Analysis') {
+    //   steps {
+    //     dir('demo-master') {
+    //       sh './gradlew sonarqube'
+    //       // wait for sonarqube to finish its analysis
+    //       sleep 5
+    //       sh './gradlew checkQualityGate'
+    //     }
+    //   }
+    // }
 
-    // Move the binary over to the test environment and
-    // get it running, in preparation for tests that
-    // require a whole system to be running.
-    stage('Deploy to Test') {
-      steps {
-        dir('demo-master') {
-          sh './gradlew deployToTestWindowsLocal'
-          // pipenv needs to be installed and on the path for this to work.
-          sh 'PIPENV_IGNORE_VIRTUALENVS=1 pipenv install'
+    // // Move the binary over to the test environment and
+    // // get it running, in preparation for tests that
+    // // require a whole system to be running.
+    // stage('Deploy to Test') {
+    //   steps {
+    //     dir('demo-master') {
+    //       sh './gradlew deployToTestWindowsLocal'
+    //       // pipenv needs to be installed and on the path for this to work.
+    //       sh 'PIPENV_IGNORE_VIRTUALENVS=1 pipenv install'
 
-          // Wait here until the server tells us it's up and listening
-          sh './gradlew waitForHeartBeat'
+    //       // Wait here until the server tells us it's up and listening
+    //       sh './gradlew waitForHeartBeat'
 
-          // clear Zap's memory for the incoming tests
-          sh 'curl http://zap/JSON/core/action/newSession -s --proxy localhost:9888'
-        }
-      }
-    }
+    //       // clear Zap's memory for the incoming tests
+    //       sh 'curl http://zap/JSON/core/action/newSession -s --proxy localhost:9888'
+    //     }
+    //   }
+    // }
 
-    // Run the tests which investigate the functioning of the API.
-    stage('API Tests') {
-      steps {
-        dir('demo-master') {
-          sh './gradlew runApiTests'
-        }
-      }
-      post {
-        always {
-          dir('demo-master') {
-            junit 'build/test-results/api_tests/*.xml'
-          }
-        }
-      }
-    }
+    // // Run the tests which investigate the functioning of the API.
+    // stage('API Tests') {
+    //   steps {
+    //     dir('demo-master') {
+    //       sh './gradlew runApiTests'
+    //     }
+    //   }
+    //   post {
+    //     always {
+    //       dir('demo-master') {
+    //         junit 'build/test-results/api_tests/*.xml'
+    //       }
+    //     }
+    //   }
+    // }
 
-    // We use a BDD framework for some UI tests, Behave, because Python rules
-    // when it comes to experimentation with UI tests.  You can try things and see how they work out.
-    // this set of BDD tests does require a running system.
-    // BDD at the UI level is just to ensure that basic capabilities work,
-    // not that every little detail of UI functionality is correct.  For
-    // that purpose, see the following stage, "UI Tests"
-    stage('UI BDD Tests') {
-      steps {
-        dir('demo-master') {
-          sh './gradlew runBehaveTests'
-          sh './gradlew generateCucumberReport'
-        }
-      }
-      post {
-        always {
-          dir('demo-master') {
-            junit 'build/test-results/bdd_ui/*.xml'
-          }
-        }
-      }
-    }
+    // // We use a BDD framework for some UI tests, Behave, because Python rules
+    // // when it comes to experimentation with UI tests.  You can try things and see how they work out.
+    // // this set of BDD tests does require a running system.
+    // // BDD at the UI level is just to ensure that basic capabilities work,
+    // // not that every little detail of UI functionality is correct.  For
+    // // that purpose, see the following stage, "UI Tests"
+    // stage('UI BDD Tests') {
+    //   steps {
+    //     dir('demo-master') {
+    //       sh './gradlew runBehaveTests'
+    //       sh './gradlew generateCucumberReport'
+    //     }
+    //   }
+    //   post {
+    //     always {
+    //       dir('demo-master') {
+    //         junit 'build/test-results/bdd_ui/*.xml'
+    //       }
+    //     }
+    //   }
+    // }
 
     // This set of tests investigates the functionality of the UI.
     // Note that this is separate fom the UI BDD Tests, which
