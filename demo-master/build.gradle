@@ -266,6 +266,7 @@ check.dependsOn(jacocoTestReport)
 
 sonarqube {
     properties {
+        property "sonar.host.url", "http://sonarqube:9000"
         property "sonar.projectKey", "$projectname"
         property "sonar.projectName", "$projectname"
         property "sonar.projectDescription", "A demonstration of a web application with good test coverage and best practices"
@@ -450,7 +451,9 @@ task checkQualityGate() {
 
 // throws an exception if the quality gate fails.
 static void isQualityGateGood() {
-    URL url = new URL("http://localhost:9000/api/qualitygates/project_status?projectKey=Demo")
+    // APril 10th, 2025: Dr. Drew said because Jenkins and Sonarqube are created use Docker Compose,
+    // we can use the name of the container as the host name and specify the port.
+    URL url = new URL("sonarqube:9000/api/qualitygates/project_status?projectKey=Demo")
     HttpURLConnection connection = (HttpURLConnection) url.openConnection()
     connection.setRequestMethod("GET")
     connection.connect()
