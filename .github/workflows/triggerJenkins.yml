@@ -3,8 +3,8 @@
 name: Trigger Jenkins Job on PR
 on:
   push:
-    branches:
-      - '**'
+    # branches:
+    #   - '**'
   pull_request:
 
 jobs:
