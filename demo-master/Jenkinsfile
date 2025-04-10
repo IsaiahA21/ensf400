@@ -155,6 +155,7 @@ pipeline {
     stage('UI Tests') {
         steps {
             dir('demo-master') {
+              sh 'chmod +x src/ui_tests/java/gradlew'
                 sh 'cd src/ui_tests/java && ./gradlew clean test'
             }
         }
