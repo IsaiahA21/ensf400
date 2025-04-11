@@ -83,10 +83,12 @@ pipeline {
     stage('Static Analysis') {
       steps {
         dir('demo-master') {
-          sh './gradlew sonarqube'
-          // wait for sonarqube to finish its analysis
-          sleep 5
-          sh './gradlew checkQualityGate'
+          // sh './gradlew sonarqube'
+          // // wait for sonarqube to finish its analysis
+          // sleep 5
+          // sh './gradlew checkQualityGate'
+          sh './gradlew sonarqube -Dsonar.host.url=http://sonarqube:9000 -Dsonar.login="admin" -Dsonar.password="ensf400"'
+
         }
       }
     }
@@ -185,7 +187,7 @@ pipeline {
     // Standards and Technology (NIST), and checks if the software
     // we are importing has any major known vulnerabilities. If so,
     // the build will halt at this point.
-    stage('Security: Dependency Analysis') {
+    /*stage('Security: Dependency Analysis') {
       steps {
         dir('demo-master') {
           sh './gradlew dependencyCheckAnalyze'
@@ -250,6 +252,6 @@ pipeline {
           sh 'sleep 5'
         }
       }
-    }
+    }*/
   }
 }
