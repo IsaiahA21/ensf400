@@ -12,18 +12,41 @@ services:
     volumes:
     - /workspaces/ensf400-lab9-jenkins/jenkins_home:/var/jenkins_home
     - /var/run/docker.sock:/var/run/docker.sock
-
-  webapp:
-    # build using the dockerfile
-    build: .
-    ports:
-      #accessible on port 8888 
-      - "8888:8080"
-    container_name: my-ensf-java-app
+    networks:
+      - dev-network
+    depends_on:
+      - sonarqube
 
   sonarqube:
-    image: sonarqube:community
+    image: sonarqube:8.9-community
+    container_name: sonarqube
+    environment:
+      - SONARQUBE_JDBC_URL=jdbc:postgresql://db:5432/sonar
+      - SONARQUBE_JDBC_USERNAME=sonar
+      - SONARQUBE_JDBC_PASSWORD=sonar
     ports:
       - "9000:9000"
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+    networks:
+      - dev-network
+
+  db:
+    image: postgres:latest
+    container_name: sonar-db
     environment:
-      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+      - POSTGRES_USER=sonar
+      - POSTGRES_PASSWORD=sonar
+      - POSTGRES_DB=sonar
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - dev-network
+
+networks:
+  dev-network:
+
+volumes:
+  jenkins_home:
+  sonarqube_data:
+  db_data:
