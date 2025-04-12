@@ -18,7 +18,7 @@ services:
       - sonarqube
 
   sonarqube:
-    image: sonarqube:community
+    image: sonarqube:8.9-community
     container_name: sonarqube
     environment:
       - SONARQUBE_JDBC_URL=jdbc:postgresql://db:5432/sonar
